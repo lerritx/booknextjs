@@ -1,34 +1,44 @@
-//File Auth.js
 "use client";
 
 import { useState } from 'react';
 
 export default function Auth({ isOpen, onClose, setAuth }) {
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:3001/login", {
+    const url = isRegister ? "http://localhost:3001/register" : "http://localhost:3001/login";
+    fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user: username, pass: password }),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data) {
-          setAuth(username);
-          localStorage.setItem("auth", username);
-          setError("");
-          onClose();
+        if (data.success) {
+          if (isRegister) {
+            setSuccess("Registration successful! You can now log in.");
+            setError('');
+            setIsRegister(false); // Switch to login form after registration
+          } else {
+            setAuth(username);
+            localStorage.setItem("auth", username);
+            setError('');
+            onClose();
+          }
         } else {
-          setError("Invalid username or password!");
+          setError(data.message || "An error occurred.");
+          setSuccess('');
         }
       })
       .catch((err) => {
-        console.log(err);
-        setError("Login failed! Please try again.");
+        console.error(err);
+        setError("Request failed! Please try again.");
+        setSuccess('');
       });
   };
 
@@ -37,8 +47,11 @@ export default function Auth({ isOpen, onClose, setAuth }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl text-orange-500 font-bold mb-4">Login</h2>
-        {error && <p className="text-red-500 mb-4" id="error">{error}</p>}
+        <h2 className="text-2xl text-teal-500 font-bold mb-4">
+          {isRegister ? "Register" : "Login"}
+        </h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {success && <p className="text-green-500 mb-4">{success}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
@@ -66,12 +79,12 @@ export default function Auth({ isOpen, onClose, setAuth }) {
               required
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <button
               type="submit"
-              className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Login
+              {isRegister ? "Register" : "Login"}
             </button>
             <button
               type="button"
@@ -82,6 +95,18 @@ export default function Auth({ isOpen, onClose, setAuth }) {
             </button>
           </div>
         </form>
+        <div className="text-center">
+          <button
+            onClick={() => {
+              setIsRegister(!isRegister);
+              setError('');
+              setSuccess('');
+            }}
+            className="text-red-500 hover:text-teal-700"
+          >
+            {isRegister ? "Already have an account? Login" : "Don't have an account? Register"}
+          </button>
+        </div>
       </div>
     </div>
   );

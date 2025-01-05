@@ -1,15 +1,15 @@
-// File: server.js
+// File: server.js - ไฟล์หลักสำหรับการทำงานของ backend server
 
-const mysql = require('mysql2/promise'); // ใช้ mysql2/promise
-const config = require('./config');
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
+const mysql = require('mysql2/promise'); // ใช้สำหรับเชื่อมต่อและจัดการฐานข้อมูล MySQL แบบ async/await
+const config = require('./config'); // นำเข้าไฟล์ config ที่เก็บค่าการตั้งค่าต่างๆ ของระบบ
+const express = require('express'); // นำเข้า framework Express.js สำหรับสร้าง web server
+const cors = require('cors'); // middleware สำหรับจัดการการเข้าถึง API จากต่างโดเมน
+const jwt = require('jsonwebtoken'); // ใช้สำหรับสร้างและตรวจสอบ token ในการยืนยันตัวตน
 
-const app = express();
-const port = config.express.port;
+const app = express(); // สร้าง instance ของ Express application
+const port = config.express.port; // กำหนดพอร์ตสำหรับรัน server จากไฟล์ config
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'); // ใช้สำหรับเข้ารหัสและตรวจสอบรหัสผ่าน
 
 // สร้าง Connection Pool
 const pool = mysql.createPool({
@@ -295,25 +295,27 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Register API
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const [existingUser] = await pool.query("SELECT * FROM users WHERE username = ?", [username]);
-        if (existingUser.length > 0) {
-            return res.status(400).json({ success: false, message: "Username already exists" });
-        }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
-
-        await pool.query("INSERT INTO users (username, password) VALUES (?, ?)", [username, hashedPassword]);
-        res.json({ success: true, message: "Registration successful" });
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Registration failed", details: err.message });
+    const { user, pass } = req.body;
+    console.log("Username:", user);  
+    console.log("Password:", pass);
+  
+    if (!user || !pass) {
+      return res.status(400).json({ success: false, message: "Fill Username and Password" });
     }
-});
+  
+    const registerSQL = "INSERT INTO users (username, password) VALUES (?, ?)";
+  
+    try {
+
+      const [results] = await pool.query(registerSQL, [user, pass]);
+
+      res.status(201).json({ success: true});
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      res.status(500).json({ success: false, message: "Unexpected error occurred." });
+    }
+  });
 
 
 // Start server
