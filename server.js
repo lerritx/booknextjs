@@ -40,238 +40,226 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// GET /patients - ดึงข้อมูลผู้ป่วยทั้งหมด
-app.get("/patients", async (req, res) => {
-  try {
-    const [results] = await pool.query("SELECT * FROM patients");
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching patients", details: err.message });
-  }
-});
+// // GET /patients - ดึงข้อมูลผู้ป่วยทั้งหมด
+// app.get("/patients", async (req, res) => {
+//   try {
+//     const [results] = await pool.query("SELECT * FROM patients");
+//     res.json(results);
+//   } catch (err) {
+//     res.status(500).json({ error: "Error fetching patients", details: err.message });
+//   }
+// });
 
-// Patients Create API
-app.post('/patients/create/', async (req, res) => {
-	const params = req.body;
+// // Patients Create API
+// app.post('/patients/create/', async (req, res) => {
+// 	const params = req.body;
   
-	console.log("create:", params);
+// 	console.log("create:", params);
   
-	const insertSQL = `
-	  INSERT INTO patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) 
-	  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`;
-	const readSQL = "SELECT * FROM patients";
+// 	const insertSQL = `
+// 	  INSERT INTO patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) 
+// 	  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+// 	`;
+// 	const readSQL = "SELECT * FROM patients";
   
-	try {
-	  // Insert patient data
-	  await pool.query(insertSQL, [
-		params.HN,
-		params.Name,
-		params.Patient_Rights_1,
-		params.Patient_Rights_2,
-		params.Patient_Rights_3,
-		params.Chronic_Disease,
-		params.Address,
-		params.Phone,
-	  ]);
+// 	try {
+// 	  // Insert patient data
+// 	  await pool.query(insertSQL, [
+// 		params.HN,
+// 		params.Name,
+// 		params.Patient_Rights_1,
+// 		params.Patient_Rights_2,
+// 		params.Patient_Rights_3,
+// 		params.Chronic_Disease,
+// 		params.Address,
+// 		params.Phone,
+// 	  ]);
   
-	  // Retrieve all patients
-	  const [results] = await pool.query(readSQL);
-	  res.status(200).send(results);
-	} catch (err) {
-	  console.error('Database connection error:', err);
-	  res.status(500).send("Backend error!");
-	}
-  });
+// 	  // Retrieve all patients
+// 	  const [results] = await pool.query(readSQL);
+// 	  res.status(200).send(results);
+// 	} catch (err) {
+// 	  console.error('Database connection error:', err);
+// 	  res.status(500).send("Backend error!");
+// 	}
+//   });
   
-// Patients Update API
-app.put('/patients/update/', async (req, res) => {
-	const params = req.body;
+// // Patients Update API
+// app.put('/patients/update/', async (req, res) => {
+// 	const params = req.body;
   
-	console.log("update:", params);
+// 	console.log("update:", params);
   
-	const updateSQL = `
-	  UPDATE patients 
-	  SET Name = ?, 
-		  Patient_Rights_1 = ?, 
-		  Patient_Rights_2 = ?, 
-		  Patient_Rights_3 = ?, 
-		  Chronic_Disease = ?, 
-		  Address = ?, 
-		  Phone = ? 
-	  WHERE HN = ?
-	`;
-	const readSQL = "SELECT * FROM patients";
+// 	const updateSQL = `
+// 	  UPDATE patients 
+// 	  SET Name = ?, 
+// 		  Patient_Rights_1 = ?, 
+// 		  Patient_Rights_2 = ?, 
+// 		  Patient_Rights_3 = ?, 
+// 		  Chronic_Disease = ?, 
+// 		  Address = ?, 
+// 		  Phone = ? 
+// 	  WHERE HN = ?
+// 	`;
+// 	const readSQL = "SELECT * FROM patients";
   
-	try {
-	  // Update patient data
-	  await pool.query(updateSQL, [
-		params.Name,
-		params.Patient_Rights_1,
-		params.Patient_Rights_2,
-		params.Patient_Rights_3,
-		params.Chronic_Disease,
-		params.Address,
-		params.Phone,
-		params.HN,
-	  ]);
+// 	try {
+// 	  // Update patient data
+// 	  await pool.query(updateSQL, [
+// 		params.Name,
+// 		params.Patient_Rights_1,
+// 		params.Patient_Rights_2,
+// 		params.Patient_Rights_3,
+// 		params.Chronic_Disease,
+// 		params.Address,
+// 		params.Phone,
+// 		params.HN,
+// 	  ]);
   
-	  // Retrieve all patients
-	  const [results] = await pool.query(readSQL);
-	  res.status(200).send(results);
-	} catch (err) {
-	  console.error('Database connection error:', err);
-	  res.status(500).send("Backend error!");
-	}
-  });
+// 	  // Retrieve all patients
+// 	  const [results] = await pool.query(readSQL);
+// 	  res.status(200).send(results);
+// 	} catch (err) {
+// 	  console.error('Database connection error:', err);
+// 	  res.status(500).send("Backend error!");
+// 	}
+//   });
   
-// Patients Delete API
-app.delete('/patients/delete/', async (req, res) => {
-	const { HN } = req.body; // รับค่า HN ที่ต้องการลบจาก body
+// // Patients Delete API
+// app.delete('/patients/delete/', async (req, res) => {
+// 	const { HN } = req.body; // รับค่า HN ที่ต้องการลบจาก body
   
-	console.log("delete:", HN);
+// 	console.log("delete:", HN);
   
-	const deleteSQL = "DELETE FROM patients WHERE HN = ?";
-	const readSQL = "SELECT * FROM patients";
+// 	const deleteSQL = "DELETE FROM patients WHERE HN = ?";
+// 	const readSQL = "SELECT * FROM patients";
   
-	try {
-	  // ลบข้อมูลผู้ป่วยที่ระบุ
-	  const [result] = await pool.query(deleteSQL, [HN]);
+// 	try {
+// 	  // ลบข้อมูลผู้ป่วยที่ระบุ
+// 	  const [result] = await pool.query(deleteSQL, [HN]);
   
-	  if (result.affectedRows === 0) {
-		return res.status(404).json({ error: "Patient not found" }); // กรณีไม่มีข้อมูลผู้ป่วยที่ลบ
-	  }
+// 	  if (result.affectedRows === 0) {
+// 		return res.status(404).json({ error: "Patient not found" }); // กรณีไม่มีข้อมูลผู้ป่วยที่ลบ
+// 	  }
   
-	  // ดึงข้อมูลผู้ป่วยที่เหลือทั้งหมด
-	  const [remainingPatients] = await pool.query(readSQL);
-	  res.status(200).send(remainingPatients);
-	} catch (err) {
-	  console.error('Database connection error:', err);
-	  res.status(500).send("Backend error!");
-	}
-  });
+// 	  // ดึงข้อมูลผู้ป่วยที่เหลือทั้งหมด
+// 	  const [remainingPatients] = await pool.query(readSQL);
+// 	  res.status(200).send(remainingPatients);
+// 	} catch (err) {
+// 	  console.error('Database connection error:', err);
+// 	  res.status(500).send("Backend error!");
+// 	}
+//   });
   
-app.post('/patients/search/:searchText', async (req, res) => {
-	const { searchText } = req.params;
+// app.post('/patients/search/:searchText', async (req, res) => {
+// 	const { searchText } = req.params;
   
-	// ตรวจสอบตัวอักษรพิเศษ
-	const format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~^\s]/;
-	const test = format.test(searchText);
+// 	// ตรวจสอบตัวอักษรพิเศษ
+// 	const format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~^\s]/;
+// 	const test = format.test(searchText);
   
-	if (test) {
-	  return res.status(400).json({ error: "Invalid search text" }); // หากเจออักขระพิเศษ ให้แจ้งเตือน
-	}
+// 	if (test) {
+// 	  return res.status(400).json({ error: "Invalid search text" }); // หากเจออักขระพิเศษ ให้แจ้งเตือน
+// 	}
   
-	const searchSQL = "SELECT * FROM patients WHERE Name LIKE ?";
+// 	const searchSQL = "SELECT * FROM patients WHERE Name LIKE ?";
   
-	try {
-	  const [results] = await pool.query(searchSQL, [`%${searchText}%`]);
-	  res.status(200).json(results);
-	} catch (err) {
-	  console.error('Database error:', err);
-	  res.status(500).json({ error: "Backend error", details: err.message });
-	}
-});
+// 	try {
+// 	  const [results] = await pool.query(searchSQL, [`%${searchText}%`]);
+// 	  res.status(200).json(results);
+// 	} catch (err) {
+// 	  console.error('Database error:', err);
+// 	  res.status(500).json({ error: "Backend error", details: err.message });
+// 	}
+// });
   
-// API สำหรับ Rights ใน server.js
+// API สำหรับ People ใน server.js
 
-// GET /rights - ดึงข้อมูล Rights ทั้งหมด
-app.get("/rights", async (req, res) => {
+// GET /people - ดึงข้อมูลทั้งหมด
+app.get("/people", async (req, res) => {
 	try {
-	  const [results] = await pool.query("SELECT * FROM rights");
+	  const [results] = await pool.query("SELECT * FROM itd_data_exam");
 	  res.json(results);
 	} catch (err) {
-	  res.status(500).json({ error: "Error fetching rights", details: err.message });
+	  res.status(500).json({ error: "Error fetching people", details: err.message });
 	}
   });
   
-// POST /rights/create - เพิ่มข้อมูล Right
-app.post('/rights/create/', async (req, res) => {
-	const params = req.body;
+  // POST /people/create - เพิ่มข้อมูล
+  app.post("/people/create", async (req, res) => {
+	const { Age, Gender, Occupation, Monthly_Income, Educational_Qualifications, Feedback } = req.body;
 	const insertSQL = `
-	  INSERT INTO rights (Patient_Rights, Thai_Rights_Name, Eng_Rights_Name) 
-	  VALUES (?, ?, ?)
+	  INSERT INTO itd_data_exam (Age, Gender, Occupation, Monthly_Income, Educational_Qualifications, Feedback) 
+	  VALUES (?, ?, ?, ?, ?, ?)
 	`;
-	const readSQL = "SELECT * FROM rights";
+	const readSQL = "SELECT * FROM itd_data_exam";
   
 	try {
-	  await pool.query(insertSQL, [
-		params.Patient_Rights,
-		params.Thai_Rights_Name,
-		params.Eng_Rights_Name,
-	  ]);
+	  await pool.query(insertSQL, [Age, Gender, Occupation, Monthly_Income, Educational_Qualifications, Feedback]);
 	  const [results] = await pool.query(readSQL);
 	  res.status(200).send(results);
 	} catch (err) {
-	  console.error('Database error:', err);
 	  res.status(500).send("Backend error!");
 	}
   });
   
-// PUT /rights/update - แก้ไขข้อมูล Right
-app.put('/rights/update/', async (req, res) => {
-	const params = req.body;
+  // PUT /people/update - แก้ไขข้อมูล
+  app.put("/people/update", async (req, res) => {
+	const { id, Age, Gender, Occupation, Monthly_Income, Educational_Qualifications, Feedback } = req.body;
 	const updateSQL = `
-	  UPDATE rights 
-	  SET Patient_Rights = ?, 
-		  Thai_Rights_Name = ?, 
-		  Eng_Rights_Name = ? 
-	  WHERE ID = ?
+	  UPDATE itd_data_exam 
+	  SET Age = ?, Gender = ?, Occupation = ?, Monthly_Income = ?, Educational_Qualifications = ?, Feedback = ?
+	  WHERE id = ?
 	`;
-	const readSQL = "SELECT * FROM rights";
+	const readSQL = "SELECT * FROM itd_data_exam";
   
 	try {
-	  await pool.query(updateSQL, [
-		params.Patient_Rights,
-		params.Thai_Rights_Name,
-		params.Eng_Rights_Name,
-		params.ID,
-	  ]);
+	  await pool.query(updateSQL, [Age, Gender, Occupation, Monthly_Income, Educational_Qualifications, Feedback, id]);
 	  const [results] = await pool.query(readSQL);
 	  res.status(200).send(results);
 	} catch (err) {
-	  console.error('Database error:', err);
 	  res.status(500).send("Backend error!");
 	}
   });
   
-// DELETE /rights/delete - ลบข้อมูล Right
-app.delete('/rights/delete/', async (req, res) => {
-	const { ID } = req.body;
-	const deleteSQL = "DELETE FROM rights WHERE ID = ?";
-	const readSQL = "SELECT * FROM rights";
+  // DELETE /people/delete - ลบข้อมูล
+  app.delete("/people/delete", async (req, res) => {
+	const { id } = req.body;
+	const deleteSQL = "DELETE FROM itd_data_exam WHERE id = ?";
+	const readSQL = "SELECT * FROM itd_data_exam";
   
 	try {
-	  const [result] = await pool.query(deleteSQL, [ID]);
+	  const [result] = await pool.query(deleteSQL, [id]);
 	  if (result.affectedRows === 0) {
-		return res.status(404).json({ error: "Right not found" });
+		return res.status(404).json({ error: "Person not found" });
 	  }
-	  const [remainingRights] = await pool.query(readSQL);
-	  res.status(200).send(remainingRights);
+	  const [remainingPeople] = await pool.query(readSQL);
+	  res.status(200).send(remainingPeople);
 	} catch (err) {
-	  console.error('Database error:', err);
 	  res.status(500).send("Backend error!");
 	}
   });
   
-// POST /rights/search/:searchText - ค้นหาข้อมูล Right
-app.post('/rights/search/:searchText', async (req, res) => {
+  // POST /people/search/:searchText - ค้นหาข้อมูล
+  app.post("/people/search/:searchText", async (req, res) => {
 	const { searchText } = req.params;
   
 	if (/[^a-zA-Z0-9ก-๙\s]/.test(searchText)) {
 	  return res.status(400).json({ error: "Invalid search text" });
 	}
   
-	const searchSQL = "SELECT * FROM rights WHERE Patient_Rights LIKE ?";
+	const searchSQL = `
+	  SELECT * FROM itd_data_exam 
+	  WHERE Age LIKE ? OR Gender LIKE ? OR Occupation LIKE ? 
+		OR Monthly_Income LIKE ? OR Educational_Qualifications LIKE ? OR Feedback LIKE ?
+	`;
 	try {
-	  const [results] = await pool.query(searchSQL, [`%${searchText}%`]);
+	  const [results] = await pool.query(searchSQL, Array(6).fill(`%${searchText}%`));
 	  res.status(200).json(results);
 	} catch (err) {
-	  console.error('Database error:', err);
 	  res.status(500).json({ error: "Backend error", details: err.message });
 	}
   });
-
 // Login API
 app.post('/login', async (req, res) => {
     const { user, pass } = req.body;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTerminal, faUser, faRightFromBracket, faWebAwesome, faPerson } from '@fortawesome/free-solid-svg-icons';
+import { faTerminal, faUser, faRightFromBracket, faHospitalUser, faIdCard } from '@fortawesome/free-solid-svg-icons';
 import Auth from "@/components/Auth";
 
 export default function Header({ onNavClick, auth, setAuth, onLogout }) {
@@ -27,7 +27,7 @@ export default function Header({ onNavClick, auth, setAuth, onLogout }) {
   };
 
   return (
-    <header className="bg-red-500 text-white py-1 px-2 w-full shadow-md fixed top-0 z-50 static">
+    <header className="bg-purple-500 text-white py-1 px-2 w-full shadow-md fixed top-0 z-50 static">
       <div className="container max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2 md:gap-4">
@@ -46,20 +46,20 @@ export default function Header({ onNavClick, auth, setAuth, onLogout }) {
           <nav className="flex flex-row gap-1 md:gap-4">
             {auth ? (
               <>
-                {/*<button 
+                {/* <button 
                   onClick={() => onNavClick('patients')} 
                   className="text-white hover:scale-105 transform transition-transform px-2 md:px-5 py-1 md:py-2 text-sm md:text-base"
                 >
-                  <FontAwesomeIcon icon={faWebAwesome} className="mr-1 md:mr-2" />
+                  <FontAwesomeIcon icon={faHospitalUser} className="mr-1 md:mr-2" />
                   <span className="hidden md:inline">Patients</span>
-                </button>*/}
+                </button> */}
 
                 <button 
-                  onClick={() => onNavClick('people')} 
+                  onClick={() => onNavClick('rights')} 
                   className="text-white hover:scale-105 transform transition-transform px-2 md:px-5 py-1 md:py-2 text-sm md:text-base"
                 >
-                  <FontAwesomeIcon icon={faPerson} className="mr-1 md:mr-2" />
-                  <span className="hidden md:inline">People</span>
+                  <FontAwesomeIcon icon={faIdCard} className="mr-1 md:mr-2" />
+                  <span className="hidden md:inline">Rights</span>
                 </button>
 
                 <button 

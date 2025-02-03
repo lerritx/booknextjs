@@ -5,7 +5,7 @@ import Body from "@/components/Body";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Patients from "@/components/Patients";
-import Rights from "@/components/Rights";
+import People from "@/components/People";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState('home');
@@ -49,7 +49,7 @@ export default function Home() {
           ) : currentView === 'patients' ? (
             <Patients />
           ) : (
-            <Rights />
+            <People />
           )
         ) : (
           <Body />
